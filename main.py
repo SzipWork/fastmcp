@@ -1,51 +1,68 @@
 from fastmcp import FastMCP
 import random
 import json
+
+# Initialize MCP server
 mcp = FastMCP("Simple Calculator Server")
 
 
+# -------------------------
+# Tools
+# -------------------------
 
-#Tool
-@mcp.tool
-def add(a:int, b:int) -> int:
-    """Add two numbers together.
-    
-    Args:
-    a: First Number
-    b: Second number
-    
-    Returns:
-    The sum of a and b
+@mcp.tool()
+def add(a: int, b: int) -> int:
     """
-    return a+b
+    Add two numbers together.
 
-@mcp.tool
-def random_number(min_val: int=1, max_val: int=100) -> int:
-    """Generate a random number within a range.
-    
     Args:
-    min_val: Minimum value (default:1)
-    max_val: Maximum value (default:100)
-    
-    Returns:
-    A rnadom integer between min_val and max_val
-    """
+        a: First number
+        b: Second number
 
+    Returns:
+        The sum of a and b
+    """
+    return a + b
+
+
+@mcp.tool()
+def random_number(min_val: int = 1, max_val: int = 100) -> int:
+    """
+    Generate a random number within a range.
+
+    Args:
+        min_val: Minimum value (default: 1)
+        max_val: Maximum value (default: 100)
+
+    Returns:
+        A random integer between min_val and max_val
+    """
     return random.randint(min_val, max_val)
 
-#Resource: Server Information
+
+# -------------------------
+# Resource
+# -------------------------
+
 @mcp.resource("info://server")
 def server_info() -> str:
-    """Get information anout this server"""
+    """Get information about this server"""
     info = {
-        "name": "Simple Ca;lculator Server",
+        "name": "Simple Calculator Server",
         "version": "1.0.0",
-        "description": "A basic MCP Server with math tools",
+        "description": "A basic MCP server with math tools",
         "tools": ["add", "random_number"]
     }
     return json.dumps(info, indent=2)
 
-#Initialize Server
 
-if __name__=="__main__":
-    mcp.run(transport="http", host="0.0.0.0", port=8001)
+# -------------------------
+# Start Server
+# -------------------------
+
+if __name__ == "__main__":
+    mcp.run(
+        transport="sse",
+        host="0.0.0.0",
+        port=8001
+    )
